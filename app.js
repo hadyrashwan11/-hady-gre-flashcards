@@ -22,15 +22,14 @@ const PLAIN={"workable":"Practical and able to work successfully.","esoteric":"H
 function easyDefinition(card){return PLAIN[card.w]||card.d;}
 
 
-function sh(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function baseDeck(){return[...sh(DATA.filter(x=>x.g==="learned").slice()),...sh(DATA.filter(x=>x.g==="new").slice())]}
+function baseDeck(){return DATA.slice()}
 function deckFor(m){
   if(m==="all") return baseDeck();
-  if(m==="learned") return sh(DATA.filter(x=>x.g==="learned").slice());
-  if(m==="new") return sh(DATA.filter(x=>x.g==="new").slice());
-  if(m==="learning") return sh(DATA.filter(x=>state[x.w]==="learning").slice());
-  if(m==="known") return sh(DATA.filter(x=>state[x.w]==="known").slice());
-  return sh(DATA.filter(x=>!state[x.w]).slice());
+  if(m==="learned") return DATA.filter(x=>x.g==="learned");
+  if(m==="new") return DATA.filter(x=>x.g==="new");
+  if(m==="learning") return DATA.filter(x=>state[x.w]==="learning");
+  if(m==="known") return DATA.filter(x=>state[x.w]==="known");
+  return DATA.filter(x=>!state[x.w]);
 }
 function saveSession(){
   const lastWord=deck.length?deck[index].w:null;
@@ -101,11 +100,10 @@ $("markLearning").onclick=()=>{
   save();
   if(mode==="known"||mode==="unseen"){deck.splice(index,1);if(index>=deck.length)index=Math.max(0,deck.length-1);render()}else next();
 };
-$("shuffle").onclick=()=>{sh(deck);index=0;render()};
 $("session25").onclick=()=>{
   let p=DATA.filter(x=>state[x.w]==="learning");
   p=[...p,...DATA.filter(x=>!state[x.w]&&x.g==="new"),...DATA.filter(x=>!state[x.w]&&x.g==="learned")];
-  deck=sh([...new Map(p.map(x=>[x.w,x])).values()]).slice(0,25);
+  deck=[...new Map(p.map(x=>[x.w,x])).values()].slice(0,25);
   mode="session";index=0;
   document.querySelectorAll("[data-mode]").forEach(b=>b.classList.remove("active"));
   render();
@@ -119,7 +117,7 @@ $("search").oninput=e=>{
 $("scene").addEventListener("touchstart",e=>{touchX=e.changedTouches[0].clientX},{passive:true});
 $("scene").addEventListener("touchend",e=>{if(touchX===null)return;const dx=e.changedTouches[0].clientX-touchX;touchX=null;if(Math.abs(dx)>55)(dx<0?next:prev)()},{passive:true});
 document.onkeydown=e=>{if(e.key==="ArrowRight")next();else if(e.key==="ArrowLeft")prev();else if(e.key===" "){e.preventDefault();$("card").classList.toggle("flipped")}};
-for(const el of [$("scene"),$("next"),$("prev"),$("markKnown"),$("markLearning"),$("shuffle"),$("session25")]){
+for(const el of [$("scene"),$("next"),$("prev"),$("markKnown"),$("markLearning"),$("session25")]){
   el.addEventListener("dblclick",e=>e.preventDefault());
   el.addEventListener("gesturestart",e=>e.preventDefault(),{passive:false});
 }
