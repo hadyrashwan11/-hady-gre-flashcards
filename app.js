@@ -99,6 +99,10 @@ function save(){localStorage.setItem(STORE,JSON.stringify(state));stats();saveSe
 function next(){if(deck.length){index=(index+1)%deck.length;render()}}
 function prev(){if(deck.length){index=(index-1+deck.length)%deck.length;render()}}
 $("scene").onclick=()=>$("card").classList.toggle("flipped");
+  // Select/copy the visible word without flipping the card.
+  $("word").addEventListener("click",e=>e.stopPropagation());
+  $("word").addEventListener("touchstart",e=>e.stopPropagation(),{passive:true});
+  $("word").addEventListener("touchend",e=>e.stopPropagation(),{passive:true});
 $("next").onclick=e=>{e.preventDefault();next()};
 $("prev").onclick=e=>{e.preventDefault();prev()};
 $("markKnown").onclick=()=>{
